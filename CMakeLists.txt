@@ -12,10 +12,16 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
     endif()
 endif()
 
+# cuda
 find_package(CUDA REQUIRED)
 
+# jsoncpp
+find_package(PkgConfig)
+pkg_check_modules(PC_JSONCPP REQUIRED jsoncpp)
+
+
 # Add the include directories
-INCLUDE_DIRECTORIES(${CUDA_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${CUDA_INCLUDE_DIRS} ${PC_JSONCPP_INCLUDE_DIRS} src)
 
 # Use the compile definitions
 add_definitions()
@@ -26,6 +32,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 FILE(GLOB_RECURSE simpleCudaMLP_SRCS src/*.cpp src/*.cu)
 
 CUDA_ADD_EXECUTABLE(simpleCudaMLP ${simpleCudaMLP_SRCS})
-target_link_libraries(simpleCudaMLP ${CUDA_LIBRARIES})
+target_link_libraries(simpleCudaMLP ${CUDA_LIBRARIES} ${PC_JSONCPP_LIBRARIES})
 
 install(TARGETS simpleCudaMLP RUNTIME DESTINATION bin)
