@@ -30,8 +30,30 @@ Layer::Layer(unsigned int neuronSize, unsigned int size) :
 {
     for (int i=0; i<size; i++) {
         neurons[i] = new Neuron(neuronSize);
+        neurons[i]->initRandomWeights();
     }
 }
+
+Layer::Layer(Json::Value layer) :
+    neurons(layer.size())
+{
+    TRACING(std::cout<<"layerJSON size("<<layer.size()<<")"<<std::endl);
+    for (int i=0; i<layer.size(); i++) {
+        neurons[i] = new Neuron(layer[i]);
+    }
+}
+
+Json::Value Layer::toJson() const
+{
+    Json::Value array(Json::arrayValue);
+//    array.resize(neurons.size());
+    for (int i=0; i<neurons.size(); i++) {
+        array.append(neurons[i]->toJson());
+    }
+
+    return array;
+}
+
 
 std::vector< real >* Layer::processInputs(std::vector< real >* input) const
 {

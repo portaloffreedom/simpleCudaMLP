@@ -21,6 +21,7 @@
 #define LAYER_H
 
 #include <vector>
+#include <json/value.h>
 #include "data_types.h"
 #include "neuron.h"
 
@@ -30,7 +31,11 @@ class Layer
 {
 public:
     Layer(unsigned int neuronSize, unsigned int size);
+    Layer(Json::Value layer);
     ~Layer();
+
+    Json::Value toJson() const;
+
     std::vector< real >* processInputs(std::vector< SCMLP::real >* input) const;
 
 private:

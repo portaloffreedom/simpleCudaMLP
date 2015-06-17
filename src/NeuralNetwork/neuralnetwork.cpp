@@ -20,6 +20,9 @@
 #include "neuralnetwork.h"
 #include <algorithm>
 #include <iostream>
+#include <json/value.h>
+#include <json/reader.h>
+#include <json/writer.h>
 #include "debug.h"
 using namespace SCMLP;
 
@@ -38,6 +41,48 @@ NeuralNetwork::NeuralNetwork(unsigned int inputSize, std::vector<unsigned int> l
     layers[layerSizes.size()] = new Layer(previousLayerSize, outputSize);
 
 }
+
+NeuralNetwork::NeuralNetwork(std::istream &input) :
+    layers(0)
+{
+    load(input);
+}
+
+static const std::string LAYERS_LABEL = "layers";
+void NeuralNetwork::load(std::istream& stream)
+{
+    Json::Value root;
+    stream >> root;
+
+    Json::Value layers = root[LAYERS_LABEL];
+
+    TRACING(std::cout<<"layers number("<<layers.size()<<")"<<std::endl);
+    this->layers.resize(layers.size());
+    for (int i=0; i<layers.size(); i++) {
+        this->layers[i] = new Layer(layers[i]);
+    }
+}
+
+void NeuralNetwork::save(std::ostream& stream) const
+{
+    stream << this->toJson() << std::flush;
+}
+
+Json::Value NeuralNetwork::toJson() const
+{
+    Json::Value root;
+
+    Json::Value array(Json::arrayValue);
+    //array.resize(layers.size());
+    for (int i=0; i<layers.size(); i++) {
+        array.append( layers[i]->toJson() );
+    }
+
+    root[LAYERS_LABEL] = array;
+
+    return root;
+}
+
 
 std::vector< real > NeuralNetwork::calculateOutput(std::vector< real >& input) const
 {

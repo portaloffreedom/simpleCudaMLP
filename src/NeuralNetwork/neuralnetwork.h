@@ -22,6 +22,7 @@
 
 #include <vector>
 #include "data_types.h"
+#include <json/value.h>
 #include "layer.h"
 
 namespace SCMLP {
@@ -30,12 +31,18 @@ class NeuralNetwork
 {
 public:
     NeuralNetwork(unsigned int inputSize, std::vector<unsigned int> layerSizes, unsigned int outputSize);
+    NeuralNetwork(std::istream& input);
     ~NeuralNetwork();
+
+    void save(std::ostream &stream) const;
+    Json::Value toJson() const;
 
     std::vector<real> calculateOutput(std::vector< SCMLP::real >& input) const;
 
 private:
     std::vector<Layer*> layers;
+
+    void load(std::istream& stream);
 };
 
 }

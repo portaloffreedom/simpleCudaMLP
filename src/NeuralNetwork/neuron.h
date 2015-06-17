@@ -21,6 +21,8 @@
 #define NEURON_H
 
 #include <vector>
+#include <istream>
+#include <json/value.h>
 #include "data_types.h"
 
 namespace SCMLP {
@@ -30,7 +32,12 @@ class Neuron
 public:
     Neuron(unsigned int size);
     Neuron(std::vector<real> weights);
+    Neuron(Json::Value weightsArray);
     ~Neuron();
+
+    Json::Value toJson() const;
+
+    void initRandomWeights();
 
     void updateWeights(std::vector< real > weights);
     const std::vector< real > getWeights() const;

@@ -20,10 +20,12 @@
 #include "neuron.h"
 #include <cassert>
 #include <iostream>
+#include <cstdlib>
+#include "debug.h"
 using namespace SCMLP;
 
 Neuron::Neuron(unsigned int size) :
-    weights(size+1, 0)
+    weights(size+1)
 {
 
 }
@@ -32,6 +34,32 @@ Neuron::Neuron(std::vector< real > weights) :
     weights(weights)
 {
 
+}
+
+Neuron::Neuron(Json::Value weightsArray) :
+    weights(weightsArray.size())
+{
+    TRACING(std::cout<<"weightsArray size("<<weightsArray.size()<<")"<<std::endl);
+    for (int i=0; i<weightsArray.size(); i++) {
+        weights[i] = weightsArray[i].asDouble();
+    }
+}
+
+Json::Value Neuron::toJson() const
+{
+    Json::Value array(Json::arrayValue);
+    //array.resize(weights.size());
+    for (int i=0; i<weights.size(); i++) {
+        array.append( Json::Value(weights[i]) );
+    }
+
+    return array;
+}
+
+void Neuron::initRandomWeights()
+{
+    for (int i=0; i<weights.size(); i++)
+        weights[i] = ((real)std::rand())/RAND_MAX;
 }
 
 void Neuron::updateWeights(std::vector< real > weights)
